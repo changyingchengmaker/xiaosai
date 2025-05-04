@@ -65,7 +65,7 @@ daily_error.to_excel('daily.xlsx', index=False)
 # === 8. Plot ===
 plt.figure(figsize=(12, 6))
 plt.plot(daily_error['date'], daily_error['delta'], label='日平均残差')
-plt.scatter(cleaning_days, daily_error[daily_error['date'].isin(cleaning_days)]['residual'], color='red', label='Cleaning Point')
+plt.scatter(cleaning_days, daily_error[daily_error['date'].isin(cleaning_days)]['residual'], color='red', label='清洗点')
 plt.axhline(0, color='gray', linestyle='--')
 plt.xlabel('日期')
 plt.ylabel('残差（实际-理论）')

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
+plt.rcParams['font.sans-serif'] = ['SimHei']
 df = pd.read_excel('output.xlsx')
 df = df.dropna(subset=['generated_energy', 'radiant_quantity'])  # remove rows with missing key values
 df['Time'] = pd.to_datetime(df['Time'])
@@ -45,18 +46,20 @@ for i, row in daily.iterrows():
 print("Recommended cleaning days:")
 for day in cleaning_days:
     print(day)
-
+#save cleaning decision day as a excel file
+cleaning_days_df = pd.DataFrame(cleaning_days, columns=['Cleaning_Day'])
+cleaning_days_df.to_excel('推荐的清洗日期.xlsx', index=False)
 
 # Plotting
 
 plt.figure(figsize=(12,5))
-plt.plot(daily['date'], daily['predicted_generation'], label='Predicted')
-plt.plot(daily['date'], daily['generated_energy'], label='Actual')
+plt.plot(daily['date'], daily['predicted_generation'], label='预测')
+plt.plot(daily['date'], daily['generated_energy'], label='实际')
 for d in cleaning_days:
     plt.axvline(pd.to_datetime(d), color='red', linestyle='--', alpha=0.5)
 plt.legend()
-plt.title("Predicted vs Actual Generation with Cleaning Points")
-plt.xlabel("Date")
+plt.title("带有清洗点的预测与实际发电量 ")
+plt.xlabel("日期")
 plt.ylabel("kWh")
 plt.grid(True)
 plt.tight_layout()
@@ -106,7 +109,7 @@ for cost_per_kw in cleaning_prices:
     }
 
 # 可视化：不同清洗价格下的清洗次数与总成本
-plt.rcParams['font.sans-serif'] = ['SimHei']
+
 costs = [v['total_cost'] for v in results.values()]
 counts = [v['clean_count'] for v in results.values()]
 labels = [f"{k}元/kW" for k in results.keys()]
