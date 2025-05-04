@@ -4,37 +4,23 @@ import matplotlib.pyplot as plt
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
-
-
-# Load data
 df = pd.read_excel('output.xlsx')
-
-
-# Predict ideal generation using XGBoost model (already trained)
 df = df.dropna(subset=['generated_energy', 'radiant_quantity'])  # remove rows with missing key values
 df['Time'] = pd.to_datetime(df['Time'])
 df['hour'] = df['Time'].dt.hour
 df['month'] = df['Time'].dt.month
 df['date'] = df['Time'].dt.date
-
-# === 3. Features and target ===
 features = ['radiant_quantity', 'now_temp', 'wind_speed', 'humid', 'hour', 'month']
 X = df[features]
 y = df['generated_energy']
-
-# === 4. Train model ===
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 model = XGBRegressor(n_estimators=100, max_depth=5, learning_rate=0.1, objective='reg:squarederror', random_state=42)
 model.fit(X_train, y_train)
-
-# === 5. Predict all data ===
 df['predicted'] = model.predict(X)
 df['residual'] = df['generated_energy'] - df['predicted']
-# We assume you already have df['predicted_generation'] as prediction
-# Here, just use placeholder example:
 df['predicted_generation'] = model.predict(df[features])
-# For now, aggregate to daily
 daily = df.groupby('date')[['generated_energy', 'predicted_generation']].sum().reset_index()
+
 
 # Parameters
 electricity_price = 0.4  # yuan/kWh
